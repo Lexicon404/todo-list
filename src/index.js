@@ -20,25 +20,27 @@ import {
 } from "./modules.js"
 
 
-import { compareAsc, format } from 'date-fns'
+import { format, add, isWithinInterval, parseISO } from 'date-fns'
 
-function currentDate() {
-    const date = new Date();
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear();
-    if (month<10) {month = `${'0'+ month}`}
-    if (day<10) {day = `${'0'+ day}`}
-    let currentDate = `${year}-${month}-${day}`;
-    return currentDate
+
+function currentDate () {
+    return format(new Date(), "yyyy-MM-dd")
 }
 
+function nextSevenDays () {
+    const result = add((new Date), {
+        days: 7,
+    })
+    return format(result, "yyyy-MM-dd")
+} 
 
+
+const projectTodo = newProject ('All Todos')
 const projectOne = newProject ('projectOne')
 const projectTwo = newProject ('projectTwo')
 const projectThree = newProject ('projectThree')
 const projectFour = newProject ('projectFour')
-const projectTodo = newProject ('All Todos')
+
 
 const taskOne = newTask ('taskOne')
 const taskOneOne = newTask ('taskOneOne')
@@ -47,11 +49,12 @@ const taskTodoOne = newTask ('task To do 1', '2023-01-25');
 const taskTodoTwo = newTask ('task To do 2', '2023-01-26');
 const taskTodoThree = newTask ('task To do 3', '2023-01-27');
 
+addProjectToTodo(projectTodo);
 addProjectToTodo(projectOne);
 addProjectToTodo(projectTwo);
 addProjectToTodo(projectThree);
 addProjectToTodo(projectFour);
-addProjectToTodo(projectTodo);
+
 
 addTaskToTodo('projectOne', taskOne);
 addTaskToTodo('projectOne', taskOneOne);
@@ -80,9 +83,10 @@ const weekButton = document.getElementById('week-button');
 
 allButton.addEventListener('click', () => displayTodo("All Todos"))
 todayButton.addEventListener('click', () => displayToday())
-weekButton.addEventListener('click', () => console.log('week button'))
-
+weekButton.addEventListener('click', () => displaySevenDays())
 }
+
+
 
 function displayTodo(projectName) {
     const content = document.getElementById('tasks');
@@ -384,8 +388,6 @@ function deleteTaskButton(taskDivId){
 
 
 
-
-
 function displayToday() {
     const content = document.getElementById('tasks');
     const title = document.getElementById('project-title');
@@ -399,13 +401,13 @@ function displayToday() {
         for (let i = 0; i < todo.length; i++ ){
             for (let j = 0; j < todo[i].task.length; j++ ){
                 if (todo[i].task[j].date === currentDate()){
-                    displayTodayTasks(i, j);
+                    displayTasks(i, j);
                 }
 
             }
         }
 
-    function displayTodayTasks(projectIndex, taskIndex){
+    function displayTasks(projectIndex, taskIndex){
 
         const taskContainer = document.createElement('div')
         const taskContainerId = `${projectIndex}-${taskIndex}`
@@ -430,13 +432,66 @@ function displayToday() {
     }
 }
 
-fromStorage();
+
+function displaySevenDays() {
+    const content = document.getElementById('tasks');
+    const title = document.getElementById('project-title');
+    const edit = document.getElementById('edit-button');
+
+    title.textContent = "Agendas for next 7 days";
+    content.textContent = '';
+    edit.textContent = '';
+
+// use a for each [i], for each [j] loop to go through all dates
+        for (let i = 0; i < todo.length; i++ ){
+            for (let j = 0; j < todo[i].task.length; j++ ){
+                if (
+                    //todo[i].task[j].date === currentDate()
+                    isWithinInterval(parseISO(todo[i].task[j].date),{
+                        start: parseISO(currentDate()),
+                        end: parseISO(nextSevenDays())
+                    }))
+                    {
+                    displayTasks(i, j);
+                }
+                
+
+            }
+        }
+
+    function displayTasks(projectIndex, taskIndex){
+
+        const taskContainer = document.createElement('div')
+        const taskContainerId = `${projectIndex}-${taskIndex}`
+        taskContainer.setAttribute('id', taskContainerId)
+        const task = document.createElement('div');
+        const date = document.createElement('div');
+        task.textContent = `${todo[projectIndex].project} - ${todo[projectIndex].task[taskIndex].task}`
+        date.textContent = todo[projectIndex].task[taskIndex].date
+        taskContainer.appendChild(task);
+        taskContainer.appendChild(date);
+        content.appendChild(taskContainer);
+
+        //add edit task button
+        editTaskButton(taskContainerId)
+        
+        //add edit date button
+        editDateButton(taskContainerId)
+
+        //add delete task button
+        deleteTaskButton(taskContainerId)
+    
+    }
+}
+
+function initiateUI(){
+fromStorage()
 navButtonListeners();
-// const projectTodo = newProject ('All Todos')
-// addProjectToTodo(projectTodo);
-// displayTodo('AllTodos')
 newProjectButton('add new project');
 displayAllProjectButton();
+displayTodo("All Todos");
+}
 
+initiateUI()
 
 

@@ -28,21 +28,18 @@ function storageAvailable(type) {
 function toStorage (){
     if (storageAvailable('localStorage')) {
         window.localStorage.setItem('todo', JSON.stringify(todo) )
-        console.log('push to local storage')
-        console.log(JSON.parse(window.localStorage.getItem('todo')))
       }
       else {
-        console.log('No Storage on browser') // Too bad, no localStorage for us
+        return // Too bad, no localStorage for us
       }
 }
 
 function fromStorage (){
-    if (storageAvailable('localStorage')) {
+    if (storageAvailable('localStorage') && 'todo' in localStorage) {
         todo = JSON.parse(window.localStorage.getItem('todo'))
-        
       }
       else {
-        console.log('No Storage on browser') // Too bad, no localStorage for us
+        return // Too bad, no localStorage for us
       }
 }
 
@@ -181,5 +178,6 @@ export {
     getProjectNameByIndex,
     getTaskArrayFromTodo,
     fromStorage,
-    syncStorage
+    syncStorage,
+    storageAvailable
 };
