@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: 1px solid red;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+
+}
+
+header {
+    background-color: darkolivegreen;
+    color: white;
+    text-align: center;
+}
+
+main {
+    display: flex;
+    flex-grow: 1;
+}
+
+nav {
+    list-style: none;
+    min-width: 20vw;
+}
+
+content {
+    min-width: 50vw;
+}
+
+
+footer {
+    background-color: darkolivegreen;
+    color: white;
+    text-align: center;
+}
+
+li > button {
+    font-size: 30px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    background-color: bisque;
+
+}
